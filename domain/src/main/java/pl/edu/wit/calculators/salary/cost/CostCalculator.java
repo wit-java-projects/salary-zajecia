@@ -1,10 +1,7 @@
 package pl.edu.wit.calculators.salary.cost;
 
-import pl.edu.wit.calculators.salary.cost.model.MonthCost;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 /**
  * Kalkulator kosztow.
@@ -12,7 +9,7 @@ import java.util.List;
  *
  * @author pawel.kowalski
  */
-public abstract class CostCalculator {
+public abstract class CostCalculator<R, P extends CalculatorParams> {
 
     /**
      * pobiera rok konfiguracji kalkulacji.
@@ -27,11 +24,11 @@ public abstract class CostCalculator {
      * @param params parametry kalkulacji
      * @return lista kosztow.
      */
-    public final List<MonthCost> calculator(final CalculationParams params) {
-        return calculate(params);
+    public final R calculate(final P params) {
+        return calculateInternal(params);
     }
 
-    protected abstract List<MonthCost> calculate(CalculationParams params);
+    protected abstract R calculateInternal(P params);
 
     protected final BigDecimal calculateValue(final BigDecimal base, final double percent) {
         BigDecimal percentDecimal = BigDecimal.valueOf(percent);
