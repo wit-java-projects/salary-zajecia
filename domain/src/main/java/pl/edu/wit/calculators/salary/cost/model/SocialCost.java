@@ -21,4 +21,8 @@ public class SocialCost {
         return pension.add(disability).add(sickness)
                 .add(medical);
     }
+
+    public BigDecimal getDeductibleSocialCost() {
+        return pension.add(disability).add(sickness);
+    }
 }

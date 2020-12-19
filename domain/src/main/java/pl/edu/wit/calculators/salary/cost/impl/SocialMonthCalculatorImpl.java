@@ -7,7 +7,9 @@ import pl.edu.wit.calculators.salary.cost.model.configuration.SocialCostConfig;
 import pl.edu.wit.calculators.salary.cost.model.parameters.SocialCalculatorParams;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BinaryOperator;
 
 @Component
 public class SocialMonthCalculatorImpl extends CostCalculator<SocialCost, SocialCalculatorParams> {
@@ -33,13 +35,13 @@ public class SocialMonthCalculatorImpl extends CostCalculator<SocialCost, Social
         // 2. oblicz koszt emerytalny
         final BigDecimal pension = calculatePension(baseSalary, socialConfiguration);
         // 3. oblicz koszt rentowy
-        final BigDecimal disability = BigDecimal.ZERO;
+        final BigDecimal disability = calculateDisability(baseSalary, socialConfiguration);
         // 4. oblicz koszt chorobowy
-        final BigDecimal sickness = BigDecimal.ZERO;
+        final BigDecimal sickness = calculateSickness(params.getSalary(), socialConfiguration);
         // 5. oblicz kwotę bazową zdrowotnego
-        final BigDecimal baseMedical = BigDecimal.ZERO;
+        final BigDecimal baseMedical = calculateBaseMedical(params.getSalary(), pension, disability, sickness);
         // 6. oblicz koszt zdrowotny
-        final BigDecimal medical = BigDecimal.ZERO;
+        final BigDecimal medical = calculateMedical(baseMedical, socialConfiguration);
 
         return SocialCost.builder()
                 .sickness(sickness)
@@ -49,11 +51,36 @@ public class SocialMonthCalculatorImpl extends CostCalculator<SocialCost, Social
                 .build();
     }
 
-    private BigDecimal calculatePension(final BigDecimal baseSalary, final SocialCostConfig socialConfiguration) {
-        return null;
+    private BigDecimal calculateMedical(BigDecimal baseMedical, SocialCostConfig socialConfiguration) {
+        return calculateValue(baseMedical, socialConfiguration.getMedical());
     }
 
-    private BigDecimal calculateBaseSalary(final SocialCalculatorParams params) {
+    protected BigDecimal calculateBaseMedical(BigDecimal salary, BigDecimal... deduction) { // varargs
+//        BigDecimal sum = BigDecimal.ZERO;
+//        for ( BigDecimal value : deduction ) {
+//            sum = sum.add(value);
+//        }
+
+        BigDecimal sum = Arrays.stream(deduction)
+                .reduce(BigDecimal::add) // sum2.add(value)
+                .orElse(BigDecimal.ZERO);
+
+        return salary.subtract(sum);
+    }
+
+    protected BigDecimal calculateSickness(BigDecimal salary, SocialCostConfig socialConfiguration) {
+        return calculateValue(salary, socialConfiguration.getSickness());
+    }
+
+    protected BigDecimal calculateDisability(BigDecimal baseSalary, SocialCostConfig socialConfiguration) {
+        return calculateValue(baseSalary, socialConfiguration.getDisability());
+    }
+
+    protected BigDecimal calculatePension(final BigDecimal baseSalary, final SocialCostConfig socialConfiguration) {
+        return calculateValue(baseSalary, socialConfiguration.getPension());
+    }
+
+    protected BigDecimal calculateBaseSalary(final SocialCalculatorParams params) {
         final BigDecimal baseSumSalary = this.accumulateSalary.accumulateAndGet(params.getSalary(), BigDecimal::add);
         final BigDecimal maxAccumulateSalary = params.getConfiguration().getSocial().getMaxAccumulateSalary();
 
