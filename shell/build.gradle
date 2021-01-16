@@ -1,0 +1,7 @@
+group 'pl.edu.wit.calculators.salary'
+version '1.0.0-SNAPSHOT'
+
+dependencies {
+    implementation 'org.springframework.shell:spring-shell-starter:2.0.0.RELEASE'
+    implementation project(':domain')
+}

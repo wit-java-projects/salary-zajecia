@@ -31,11 +31,14 @@ public abstract class CostCalculator<R, P extends CalculatorParams> {
     protected abstract R calculateInternal(P params);
 
     protected final BigDecimal calculateValue(final BigDecimal base, final double percent) {
-        BigDecimal percentDecimal = BigDecimal.valueOf(percent);
+        final BigDecimal percentDecimal = BigDecimal.valueOf(percent);
 
-        return base.multiply(percentDecimal)
-                .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)
-                .setScale(2, RoundingMode.HALF_UP);
+        return formatValue(base.multiply(percentDecimal)
+                .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
+    }
+
+    protected BigDecimal formatValue(final BigDecimal base) {
+        return base.setScale(2, RoundingMode.HALF_UP);
     }
 
 }

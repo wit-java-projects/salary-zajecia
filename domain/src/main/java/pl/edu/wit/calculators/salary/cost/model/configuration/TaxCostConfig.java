@@ -7,6 +7,7 @@ import lombok.Singular;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Builder
@@ -19,11 +20,16 @@ public class TaxCostConfig {
     @Singular
     private final List<TaxThreshold> thresholds;
 
+    @Getter
     @RequiredArgsConstructor
     public static class TaxThreshold {
         private final BigDecimal minSalary;
         private final BigDecimal maxSalary;
         private final double percent;
+
+        public Optional<BigDecimal> getMaxSalary() {
+            return Optional.ofNullable(maxSalary);
+        }
     }
 
 
