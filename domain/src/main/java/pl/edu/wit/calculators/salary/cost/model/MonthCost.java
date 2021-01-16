@@ -13,6 +13,7 @@ import java.time.Month;
 @ToString
 @EqualsAndHashCode
 public class MonthCost {
+    private final int year;
     private final Month month;
     private final BigDecimal grossSalary;
     private final BigDecimal netSalary;

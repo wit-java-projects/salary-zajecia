@@ -9,15 +9,14 @@ import pl.edu.wit.calculators.salary.cost.model.parameters.SocialCalculatorParam
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BinaryOperator;
 
 @Component
-public class SocialMonthCalculatorImpl extends CostCalculator<SocialCost, SocialCalculatorParams> {
+class SocialMonthCalculatorImpl extends CostCalculator<SocialCost, SocialCalculatorParams> {
 
-    private AtomicReference<BigDecimal> accumulateSalary;
+    private final AtomicReference<BigDecimal> accumulateSalary;
 
     public SocialMonthCalculatorImpl() {
-        this.accumulateSalary = new AtomicReference<>();
+        this.accumulateSalary = new AtomicReference<>(BigDecimal.ZERO);
     }
 
     @Override
@@ -62,8 +61,8 @@ public class SocialMonthCalculatorImpl extends CostCalculator<SocialCost, Social
 //        }
 
         BigDecimal sum = Arrays.stream(deduction)
-                .reduce(BigDecimal::add) // sum2.add(value)
-                .orElse(BigDecimal.ZERO);
+                        .reduce(BigDecimal::add) // sum2.add(value)
+                        .orElse(BigDecimal.ZERO);
 
         return salary.subtract(sum);
     }

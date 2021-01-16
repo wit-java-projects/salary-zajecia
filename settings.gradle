@@ -1,3 +1,5 @@
 rootProject.name = 'salaries-calculator'
 include 'domain'
+include 'api-shell'
+
 
